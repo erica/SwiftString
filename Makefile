@@ -28,9 +28,9 @@ cleaner:
 	rm -rf .git
 
 clean:
-	rm *~ Sources/*~
 	rm .DS_Store
 	rm */.DS_Store
+	rm *~ Sources/*~
 
 show:
 	git tag

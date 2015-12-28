@@ -171,6 +171,27 @@ public extension String {
     }
 }
 
+// --------------------------------------------------
+// MARK: Trimming
+// --------------------------------------------------
+
+extension String {
+    /// My take on "lastPathComponent" but a little more general
+    func trimBackTo(boundary: Character) -> String {
+        if isEmpty {return ""}
+        var limitIndex = endIndex.predecessor()
+        let characterStore = characters
+        while limitIndex >= startIndex {
+            if characterStore[limitIndex] == boundary {
+                return self[limitIndex.successor()..<endIndex]
+            }
+            if limitIndex == startIndex {break}
+            limitIndex = limitIndex.predecessor()
+        }
+        return self
+    }
+}
+
 
 // --------------------------------------------------
 // MARK: Subscripting

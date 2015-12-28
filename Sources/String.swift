@@ -180,9 +180,8 @@ extension String {
     func trimBackTo(boundary: Character) -> String {
         if isEmpty {return ""}
         var limitIndex = endIndex.predecessor()
-        let characterStore = characters
         while limitIndex >= startIndex {
-            if characterStore[limitIndex] == boundary {
+            if characters[limitIndex] == boundary {
                 return self[limitIndex.successor()..<endIndex]
             }
             if limitIndex == startIndex {break}

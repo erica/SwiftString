@@ -10,3 +10,4 @@ A small library of String utilities for the Swift programmer. This is my first a
 * NSString mimicking: rangeOfString, componentsSeparatedByString
 * Decomposition: first, last, butFirst, butLast, car, cdr, just, at, except
 * Subscripting: subscripting with get/set with integer subscripting
+* Numbers: Converting to and from hex, octal, binary

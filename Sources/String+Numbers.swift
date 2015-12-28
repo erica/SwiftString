@@ -16,30 +16,51 @@ Erica Sadun, http://ericasadun.com
 
 // Support Swift prefixes (0b, 0o, 0x) and Unix (0, 0x / 0X)
 public extension String {
+    
+    /// Expose integer value
+    public var integerValue: Int {
+        return strtol(self, nil, 10)
+    }
+    
+    /// Expose UInteger value
+    public var uintegerValue: UInt {
+        return strtoul(self, nil, 10)
+    }
+    
+    /// Boolean Value
+    public var booleanValue: Bool {
+        return integerValue != 0
+    }
 
     /// Convert string to its binary value, ignoring any 0b prefix
     public var binaryValue: Int {
-        return strtol(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)}
+        return strtol(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)
+    }
     
     /// Convert string to its octal value, ignoring any 0o prefix, supporting 0 prefix
     public var octalValue: Int {
-        return strtol(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)}
+        return strtol(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)
+    }
     
     /// Convert string to hex value. This supports 0x, 0X prefix if present
     public var hexValue: Int {
-        return strtol(self, nil, 16)}
+        return strtol(self, nil, 16)
+    }
     
     /// Convert string to its unsigned binary value, ignoring any 0b prefix
     public var uBinaryValue: UInt {
-        return strtoul(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)}
+        return strtoul(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)
+    }
 
     /// Convert string to its unsigned octal value, ignoring any 0o prefix
     public var uOctalValue: UInt {
-        return strtoul(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)}
+        return strtoul(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)
+    }
     
     /// Convert string to unsigned hex value. This supports 0x prefix if present
     public var uHexValue: UInt {
-        return strtoul(self, nil, 16)}
+        return strtoul(self, nil, 16)
+    }
     
     /// Prepend self with character padding
     public func leftPaddedToWidth(width: Int, withCharacter character: Character = "0") -> String {

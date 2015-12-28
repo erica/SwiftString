@@ -179,20 +179,72 @@ extension String {
     /// Retake on "lastPathComponent" and "pathExtension"
     /// but a little more general in behavior
     ///
-    /// - Author: aciidb, ankit.im
-    func trimBackTo(boundary: Character) -> String {
-        if isEmpty {return ""}
-        if self[endIndex.predecessor()] == boundary { return "" }
-        return characters.split(boundary).map(String.init).last!
+    /// - Authors: aciidb, erica
+    func suffixFrom(
+        boundary: Character,
+        includingBoundary include: Bool = false) -> String {
+            if isEmpty {return ""}
+            let prefix = include ? String(boundary) : ""
+            if self[endIndex.predecessor()] == boundary { return prefix + "" }
+            if let suffix = characters.split(boundary).map(String.init).last {
+                guard self != suffix else {return self}
+                return prefix + suffix
+            }
+            return self
     }
     
-    /// Trim forward to boundary
+    /// Snip forward through boundary
     ///
-    /// - Author: aciidb, ankit.im
-    func trimUpTo(boundary: Character) -> String {
-        if isEmpty {return ""}
-        if self[endIndex.predecessor()] == boundary { return "" }
-        return characters.split(boundary, maxSplit: 1, allowEmptySlices: false).map(String.init).last!
+    /// - Authors: aciidb, erica
+    func prefixTo(
+        boundary: Character,
+        includingBoundary include: Bool = false) -> String {
+            if isEmpty {return ""}
+            let suffix = include ? String(boundary) : ""
+            if self[startIndex] == boundary {
+                return "" + suffix
+            }
+            if let prefix = characters.split(boundary, maxSplit: 1, allowEmptySlices: false).map(String.init).first {
+                guard self != prefix else {return self}
+                return prefix + suffix
+            }
+            return self
+    }
+    
+    /// Trim back from end up to and through boundary
+    func prefixBefore(
+        boundary: Character,
+        includingBoundary include: Bool = false) -> String {
+            if isEmpty {return ""}
+            var limitIndex = endIndex.predecessor()
+            while limitIndex >= startIndex {
+                if characters[limitIndex] == boundary {
+                    return include ? self[startIndex...limitIndex] : self[startIndex..<limitIndex]
+                }
+                guard limitIndex != startIndex else {break}
+                limitIndex = limitIndex.predecessor()
+            }
+            return self
+    }
+    
+    /// Trim forward to and through boundary
+    func suffixAfter(
+        boundary: Character,
+        includingBoundary include: Bool = false) -> String {
+            if isEmpty {return ""}
+            var limitIndex = startIndex
+            while limitIndex < endIndex{
+                if characters[limitIndex] == boundary {
+                    var idx = limitIndex
+                    if !include {
+                        idx = limitIndex.advancedBy(1, limit: endIndex.predecessor())
+                    }
+                    return self[idx..<endIndex]
+                }
+                guard limitIndex != endIndex.predecessor() else {break}
+                limitIndex = limitIndex.successor()
+            }
+            return self
     }
 }
 

@@ -4,6 +4,7 @@ Erica Sadun, http://ericasadun.com
 
 */
 
+import Foundation
 #if os(Linux)
     import Glibc
 #else
@@ -87,4 +88,22 @@ public extension Int {
     
     /// Convert to hex string, no prefix
     public var hexString: String {return String(self, radix:16)}
+    
+    ///
+    public func format(f: String) -> String {
+        return NSString(format: "%\(f)d", self) as String
+    }
 }
+
+public extension Float {
+    public func format(f: String) -> String {
+        return NSString(format: "%\(f)f", self) as String
+    }
+}
+
+public extension Double {
+    public func format(f: String) -> String {
+        return NSString(format: "%\(f)f", self) as String
+    }
+}
+

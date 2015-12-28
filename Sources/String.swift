@@ -44,10 +44,10 @@ extension String {
 // MARK: Range and Components Separated
 // --------------------------------------------------
 
-extension String {
+public extension String {
     
     /// Range of first match to string
-    func rangeOfString(searchString: String) -> Range<Index>? {
+    public func rangeOfString(searchString: String) -> Range<Index>? {
         
         // If equality, return full range
         if searchString == self {return startIndex..<endIndex}
@@ -85,7 +85,7 @@ extension String {
     }
     
     /// Mimic NSString's version
-    func componentsSeparatedByString(separator:  String) -> [String] {
+    public func componentsSeparatedByString(separator:  String) -> [String] {
         var components: [String] = []
         var searchString = self
         
@@ -133,7 +133,7 @@ public extension String {
     }
     
     /// All characters but the first
-    var butFirst: String {
+    public var butFirst: String {
         return String(characters.dropFirst())
     }
     
@@ -149,7 +149,7 @@ public extension String {
     }
 
     /// All characters but the last
-    var butLast: String {return String(characters.dropLast())}
+    public var butLast: String {return String(characters.dropLast())}
     
     /// Return string at subrange
     public func just(desiredRange: Range<Int>) -> String {
@@ -180,7 +180,7 @@ public extension Int {
     /// Subscript a string using Integer[String] representation
     /// e.g. let c = 4["hello world"] // "o"
     /// Thanks Mike Ash
-    subscript(string: String) -> Character {
+    public subscript(string: String) -> Character {
         return string[string.startIndex.advancedBy(self)]
     }
 }

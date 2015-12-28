@@ -18,36 +18,32 @@ Erica Sadun, http://ericasadun.com
 public extension String {
 
     /// Convert string to its binary value, ignoring any 0b prefix
-    public var binaryValue : Int {
-        return strtol(self.hasPrefix("0b") ?
-            String(self.characters.dropFirst(2)) : self, nil, 2)}
+    public var binaryValue: Int {
+        return strtol(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)}
     
     /// Convert string to its octal value, ignoring any 0o prefix, supporting 0 prefix
-    public var octalValue : Int {
-        return strtol(self.hasPrefix("0o") ?
-            String(self.characters.dropFirst(2)) : self, nil, 8)}
+    public var octalValue: Int {
+        return strtol(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)}
     
     /// Convert string to hex value. This supports 0x, 0X prefix if present
-    public var hexValue : Int {
+    public var hexValue: Int {
         return strtol(self, nil, 16)}
     
     /// Convert string to its unsigned binary value, ignoring any 0b prefix
-    public var uBinaryValue : UInt {
-        return strtoul(self.hasPrefix("0b") ?
-            String(self.characters.dropFirst(2)) : self, nil, 2)}
+    public var uBinaryValue: UInt {
+        return strtoul(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)}
 
     /// Convert string to its unsigned octal value, ignoring any 0o prefix
-    public var uOctalValue : UInt {
-        return strtoul(self.hasPrefix("0o") ?
-            String(self.characters.dropFirst(2)) : self, nil, 8)}
+    public var uOctalValue: UInt {
+        return strtoul(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)}
     
     /// Convert string to unsigned hex value. This supports 0x prefix if present
-    public var uHexValue : UInt {
+    public var uHexValue: UInt {
         return strtoul(self, nil, 16)}
     
     /// Prepend self with character padding
-    public func leftPaddedToWidth(width : Int, withCharacter character : Character = "0") -> String {
-        return String(count: width - Int(self.characters.count), repeatedValue: character) + self
+    public func leftPaddedToWidth(width: Int, withCharacter character: Character = "0") -> String {
+        return String(count: width - Int(characters.count), repeatedValue: character) + self
     }
     
     /// Standard binary prefix
@@ -63,11 +59,11 @@ public extension String {
 public extension Int {
     
     /// Convert to binary string, no prefix
-    public var binaryString : String {return String(self, radix:2)}
+    public var binaryString: String {return String(self, radix:2)}
     
     /// Convert to octal string, no prefix
-    public var octalString : String {return String(self, radix:8)}
+    public var octalString: String {return String(self, radix:8)}
     
     /// Convert to hex string, no prefix
-    public var hexString : String {return String(self, radix:16)}
+    public var hexString: String {return String(self, radix:16)}
 }

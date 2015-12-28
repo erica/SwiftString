@@ -1,4 +1,8 @@
+# Less a MakeFile. More a Cheat Sheet.
+# git config —global push.followTags true 
+
 MESSAGE=$(filter-out $@,$(MAKECMDGOALS))
+
 all:
 	/Library/Developer/Toolchains/swift-latest.xctoolchain/usr/bin/swift build
 
@@ -8,6 +12,9 @@ setup:
 	git remote add origin https://github.com/erica/SwiftString.git
 	git push -u origin master
 	git push --tags
+
+doit:
+	git add . ; git commit -m "tweaked" ; git push
 
 pull: 
 	git clone https://github.com/erica/SwiftString.git
@@ -28,9 +35,7 @@ cleaner:
 	rm -rf .git
 
 clean:
-	rm .DS_Store
-	rm */.DS_Store
-	rm *~ Sources/*~
+	rm *~ Sources/*~ .DS_Store */.DS_Store
 
 show:
 	git tag

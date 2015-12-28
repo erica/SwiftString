@@ -176,21 +176,25 @@ public extension String {
 // --------------------------------------------------
 
 extension String {
-    /// My take on "lastPathComponent" but a little more general
+    /// Retake on "lastPathComponent" and "pathExtension"
+    /// but a little more general in behavior
+    ///
+    /// - Author: aciidb, ankit.im
     func trimBackTo(boundary: Character) -> String {
         if isEmpty {return ""}
-        var limitIndex = endIndex.predecessor()
-        while limitIndex >= startIndex {
-            if characters[limitIndex] == boundary {
-                return self[limitIndex.successor()..<endIndex]
-            }
-            if limitIndex == startIndex {break}
-            limitIndex = limitIndex.predecessor()
-        }
-        return self
+        if self[endIndex.predecessor()] == boundary { return "" }
+        return characters.split(boundary).map(String.init).last!
+    }
+    
+    /// Trim forward to boundary
+    ///
+    /// - Author: aciidb, ankit.im
+    func trimUpTo(boundary: Character) -> String {
+        if isEmpty {return ""}
+        if self[endIndex.predecessor()] == boundary { return "" }
+        return characters.split(boundary, maxSplit: 1, allowEmptySlices: false).map(String.init).last!
     }
 }
-
 
 // --------------------------------------------------
 // MARK: Subscripting
@@ -199,7 +203,7 @@ extension String {
 public extension Int {
     /// Subscript a string using Integer[String] representation
     /// e.g. let c = 4["hello world"] // "o"
-    /// Thanks Mike Ash
+    /// Thanks Mike Ash, mikeash.com
     public subscript(string: String) -> Character {
         return string[string.startIndex.advancedBy(self)]
     }

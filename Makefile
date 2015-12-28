@@ -17,6 +17,7 @@ push:
 	git commit -m "$(MESSAGE)"
 	git push
 	echo "git tag -a 1.0.x -m message-in-quotes"
+	echo "git tag -d 1.0.0"
 	echo "make pushtag"
 
 pushtag:

@@ -185,7 +185,9 @@ extension String {
         includingBoundary include: Bool = false) -> String {
             if isEmpty {return ""}
             let prefix = include ? String(boundary) : ""
-            if self[endIndex.predecessor()] == boundary { return prefix + "" }
+            if self[endIndex.predecessor()] == boundary {
+                return prefix + ""
+            }
             if let suffix = characters.split(boundary).map(String.init).last {
                 guard self != suffix else {return self}
                 return prefix + suffix

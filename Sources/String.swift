@@ -175,78 +175,62 @@ public extension String {
 // MARK: Trimming
 // --------------------------------------------------
 
-extension String {
+internal extension CollectionType where Index: BidirectionalIndexType {
+    /// Return last matching index in non-equatable collection
+    ///
+    /// - Author: oisdk
+    internal func lastIndexOf(@noescape isElement: Generator.Element -> Bool) -> Index? {
+        for i in indices.reverse()
+            where isElement(self[i]) {
+                return i
+        }
+        return nil
+    }
+}
+
+internal extension CollectionType where Index: BidirectionalIndexType, Generator.Element: Equatable {
+    /// Return last matching index in equatable collection
+    ///
+    /// - Author: oisdk
+    internal func lastIndexOf(element: Generator.Element) -> Index? {
+        return lastIndexOf { e in e == element }
+    }
+}
+
+public extension String {
     /// Retake on "lastPathComponent" and "pathExtension"
     /// but a little more general in behavior
     ///
-    /// - Authors: aciidb, erica
-    func suffixFromFinal(
+    /// - Authors: aciidb, erica, oisdk, with space-assist from jweinberg
+    public func suffixFrom(
         boundary: Character,
+        searchingBackwards backwards: Bool = true,
         includingBoundary include: Bool = false) -> String {
-            if isEmpty {return ""}
-            let prefix = include ? String(boundary) : ""
-            if self[endIndex.predecessor()] == boundary { return prefix + "" }
-            if let suffix = characters.split(boundary).map(String.init).last {
-                guard self != suffix else {return self}
-                return prefix + suffix
-            }
-            return self
+            guard let i = backwards ?
+                characters.lastIndexOf(boundary) :
+                characters.indexOf(boundary)
+                else { return self }
+            return String(characters.suffixFrom(include ? i : i.successor()))
     }
     
-    /// Trim forward to and through boundary
-    func suffixFromFirst(
-        boundary: Character,
-        includingBoundary include: Bool = false) -> String {
-            if isEmpty {return ""}
-            var limitIndex = startIndex
-            while limitIndex < endIndex{
-                if characters[limitIndex] == boundary {
-                    var idx = limitIndex
-                    if !include {
-                        idx = limitIndex.advancedBy(1, limit: endIndex.predecessor())
-                    }
-                    return self[idx..<endIndex]
-                }
-                guard limitIndex != endIndex.predecessor() else {break}
-                limitIndex = limitIndex.successor()
-            }
-            return self
-    }
-    
-    /// Snip forward through boundary
+    /// Alternative to lastPathComponent, pathExtension
+    /// but taking prefix instead of suffix
     ///
-    /// - Authors: aciidb, erica
-    func prefixToFirst(
+    /// - Authors: aciidb, erica, oisdk, with space-assist from jweinberg
+    public func prefixTo(
         boundary: Character,
+        searchingForwards forwards: Bool = true,
         includingBoundary include: Bool = false) -> String {
-            if isEmpty {return ""}
-            let suffix = include ? String(boundary) : ""
-            if self[startIndex] == boundary {
-                return "" + suffix
-            }
-            if let prefix = characters.split(boundary, maxSplit: 1, allowEmptySlices: false).map(String.init).first {
-                guard self != prefix else {return self}
-                return prefix + suffix
-            }
-            return self
-    }
-    
-    /// Trim back from end up to and through boundary
-    func prefixToFinal(
-        boundary: Character,
-        includingBoundary include: Bool = false) -> String {
-            if isEmpty {return ""}
-            var limitIndex = endIndex.predecessor()
-            while limitIndex >= startIndex {
-                if characters[limitIndex] == boundary {
-                    return include ? self[startIndex...limitIndex] : self[startIndex..<limitIndex]
-                }
-                guard limitIndex != startIndex else {break}
-                limitIndex = limitIndex.predecessor()
-            }
-            return self
+            guard let i = forwards ?
+                characters.indexOf(boundary) :
+                characters.lastIndexOf(boundary)
+                else { return self }
+            return String(include ? characters.prefixThrough(i) : characters.prefixUpTo(i))
     }
 }
+
+
+
 // --------------------------------------------------
 // MARK: Subscripting
 // --------------------------------------------------

@@ -180,14 +180,12 @@ extension String {
     /// but a little more general in behavior
     ///
     /// - Authors: aciidb, erica
-    func suffixFrom(
+    func suffixFromFinal(
         boundary: Character,
         includingBoundary include: Bool = false) -> String {
             if isEmpty {return ""}
             let prefix = include ? String(boundary) : ""
-            if self[endIndex.predecessor()] == boundary {
-                return prefix + ""
-            }
+            if self[endIndex.predecessor()] == boundary { return prefix + "" }
             if let suffix = characters.split(boundary).map(String.init).last {
                 guard self != suffix else {return self}
                 return prefix + suffix
@@ -195,42 +193,8 @@ extension String {
             return self
     }
     
-    /// Snip forward through boundary
-    ///
-    /// - Authors: aciidb, erica
-    func prefixTo(
-        boundary: Character,
-        includingBoundary include: Bool = false) -> String {
-            if isEmpty {return ""}
-            let suffix = include ? String(boundary) : ""
-            if self[startIndex] == boundary {
-                return "" + suffix
-            }
-            if let prefix = characters.split(boundary, maxSplit: 1, allowEmptySlices: false).map(String.init).first {
-                guard self != prefix else {return self}
-                return prefix + suffix
-            }
-            return self
-    }
-    
-    /// Trim back from end up to and through boundary
-    func prefixBefore(
-        boundary: Character,
-        includingBoundary include: Bool = false) -> String {
-            if isEmpty {return ""}
-            var limitIndex = endIndex.predecessor()
-            while limitIndex >= startIndex {
-                if characters[limitIndex] == boundary {
-                    return include ? self[startIndex...limitIndex] : self[startIndex..<limitIndex]
-                }
-                guard limitIndex != startIndex else {break}
-                limitIndex = limitIndex.predecessor()
-            }
-            return self
-    }
-    
     /// Trim forward to and through boundary
-    func suffixAfter(
+    func suffixFromFirst(
         boundary: Character,
         includingBoundary include: Bool = false) -> String {
             if isEmpty {return ""}
@@ -248,8 +212,41 @@ extension String {
             }
             return self
     }
+    
+    /// Snip forward through boundary
+    ///
+    /// - Authors: aciidb, erica
+    func prefixToFirst(
+        boundary: Character,
+        includingBoundary include: Bool = false) -> String {
+            if isEmpty {return ""}
+            let suffix = include ? String(boundary) : ""
+            if self[startIndex] == boundary {
+                return "" + suffix
+            }
+            if let prefix = characters.split(boundary, maxSplit: 1, allowEmptySlices: false).map(String.init).first {
+                guard self != prefix else {return self}
+                return prefix + suffix
+            }
+            return self
+    }
+    
+    /// Trim back from end up to and through boundary
+    func prefixToFinal(
+        boundary: Character,
+        includingBoundary include: Bool = false) -> String {
+            if isEmpty {return ""}
+            var limitIndex = endIndex.predecessor()
+            while limitIndex >= startIndex {
+                if characters[limitIndex] == boundary {
+                    return include ? self[startIndex...limitIndex] : self[startIndex..<limitIndex]
+                }
+                guard limitIndex != startIndex else {break}
+                limitIndex = limitIndex.predecessor()
+            }
+            return self
+    }
 }
-
 // --------------------------------------------------
 // MARK: Subscripting
 // --------------------------------------------------

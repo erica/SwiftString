@@ -50,17 +50,17 @@ public extension String {
     public func rangeOfString(searchString: String) -> Range<Index>? {
         
         // If equality, return full range
-        if searchString == self {return startIndex..<endIndex}
+        if searchString == self { return startIndex..<endIndex }
         
         // Basic sanity checks
         let (count, stringCount) = (characters.count, searchString.characters.count)
-        guard !isEmpty && !searchString.isEmpty && stringCount < count else {return nil}
+        guard !isEmpty && !searchString.isEmpty && stringCount < count else { return nil }
         
         // Moving search offset. Thanks Josh W
         let stringCharacters = characters
         let searchCharacters = searchString.characters
         var searchOffset = stringCharacters.startIndex
-        let searchLimit = stringCharacters.endIndex.advancedBy(-stringCount)
+        let searchLimit = stringCharacters.endIndex.advancedBy(-stringCount, limit:  stringCharacters.startIndex)
         var failedMatch = true
         
         // March character checks through string
@@ -69,7 +69,7 @@ public extension String {
             
             // Enumerate through characters
             for (idx, c) in searchCharacters.enumerate() {
-                if c != stringCharacters[searchOffset.advancedBy(idx)] {
+                if c != stringCharacters[searchOffset.advancedBy(idx, limit: stringCharacters.endIndex)] {
                     failedMatch = true; break
                 }
             }
@@ -81,7 +81,7 @@ public extension String {
             searchOffset = searchOffset.successor()
         }
         
-        return failedMatch ? nil : searchOffset..<searchOffset.advancedBy(stringCount)
+        return failedMatch ? nil : searchOffset..<searchOffset.advancedBy(stringCount, limit:searchString.endIndex)
     }
     
     /// Mimic NSString's version
@@ -106,9 +106,7 @@ public extension String {
             searchString = String(searchStringCharacters.suffixFrom(range.endIndex))
         }
         
-        if !searchString.isEmpty {
-            components.append(searchString)
-        }
+        if !searchString.isEmpty { components.append(searchString) }
         return components
     }
 }
@@ -176,10 +174,9 @@ public extension String {
 // --------------------------------------------------
 
 internal extension CollectionType where Index: BidirectionalIndexType {
-    /// Return last matching index in non-equatable collection
-    ///
+    /// Return the index of the last element in `self` which returns `true` for `isElement`
     /// - Author: oisdk
-    internal func lastIndexOf(@noescape isElement: Generator.Element -> Bool) -> Index? {
+    internal func _lastIndexOf(@noescape isElement: Generator.Element -> Bool) -> Index? {
         for i in indices.reverse()
             where isElement(self[i]) {
                 return i
@@ -189,11 +186,11 @@ internal extension CollectionType where Index: BidirectionalIndexType {
 }
 
 internal extension CollectionType where Index: BidirectionalIndexType, Generator.Element: Equatable {
-    /// Return last matching index in equatable collection
+    /// Return the index of the last element in `self` which returns `true` for `isElement`
     ///
     /// - Author: oisdk
-    internal func lastIndexOf(element: Generator.Element) -> Index? {
-        return lastIndexOf { e in e == element }
+    internal func _lastIndexOf(element: Generator.Element) -> Index? {
+        return _lastIndexOf { e in e == element }
     }
 }
 
@@ -207,7 +204,7 @@ public extension String {
         searchingBackwards backwards: Bool = true,
         includingBoundary include: Bool = false) -> String {
             guard let i = backwards ?
-                characters.lastIndexOf(boundary) :
+                characters._lastIndexOf(boundary) :
                 characters.indexOf(boundary)
                 else { return self }
             return String(characters.suffixFrom(include ? i : i.successor()))
@@ -223,7 +220,7 @@ public extension String {
         includingBoundary include: Bool = false) -> String {
             guard let i = forwards ?
                 characters.indexOf(boundary) :
-                characters.lastIndexOf(boundary)
+                characters._lastIndexOf(boundary)
                 else { return self }
             return String(include ? characters.prefixThrough(i) : characters.prefixUpTo(i))
     }
@@ -240,7 +237,7 @@ public extension Int {
     /// e.g. let c = 4["hello world"] // "o"
     /// Thanks Mike Ash, mikeash.com
     public subscript(string: String) -> Character {
-        return string[string.startIndex.advancedBy(self)]
+        return string[string.startIndex.advancedBy(self, limit: string.endIndex)]
     }
 }
 

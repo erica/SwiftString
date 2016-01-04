@@ -69,23 +69,23 @@ public extension String {
     }
     
     /// Standard binary prefix
-    public var binaryPrefix: String {return "0b"}
+    public var binaryPrefix: String { return "0b" }
     
     /// Standard octal prefix
-    public var octalPrefix: String {return "0o"}
+    public var octalPrefix: String { return "0o" }
     
     /// Standard hex prefix
-    public var hexPrefix: String {return "0x"}
+    public var hexPrefix: String { return "0x" }
 }
 
 public extension Int {
     
     /// Convert to binary string, no prefix
-    public var binaryString: String {return String(self, radix:2)}
+    public var binaryString: String { return String(self, radix:2) }
     
     /// Convert to octal string, no prefix
-    public var octalString: String {return String(self, radix:8)}
+    public var octalString: String { return String(self, radix:8) }
     
     /// Convert to hex string, no prefix
-    public var hexString: String {return String(self, radix:16)}
+    public var hexString: String { return String(self, radix:16) }
 }

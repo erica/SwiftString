@@ -14,12 +14,12 @@ Erica Sadun, http://ericasadun.com
 
 public extension String.CharacterView {
     /// Convert character view back to String
-    public var stringValue: String {return String(self)}
+    public var stringValue: String { return String(self) }
 }
 
 public extension String {
     /// Length in characters
-    public var characterLength: Int {return characters.count}
+    public var characterLength: Int { return characters.count }
 }
 
 // --------------------------------------------------
@@ -28,7 +28,7 @@ public extension String {
 
 public extension String {
     /// Reverse a String instance by re-ordering its characters
-    public var reversed: String {return String(characters.reverse())}
+    public var reversed: String { return String(characters.reverse()) }
 }
 
 // --------------------------------------------------
@@ -83,7 +83,7 @@ public extension String {
             }
             
             // Test for success
-            guard failedMatch else {break}
+            guard failedMatch else { break }
             
             // Offset search by one character
             searchOffset = searchOffset.successor()
@@ -107,7 +107,7 @@ public extension String {
             // Break off first item (thanks Josh W)
             let searchStringCharacters = searchString.characters
             let first = String(searchStringCharacters.prefixUpTo(range.startIndex))
-            if !first.isEmpty {components.append(first)}
+            if !first.isEmpty { components.append(first) }
             
             // Anything left to find?
             if range.endIndex == searchString.endIndex {
@@ -148,10 +148,10 @@ public extension String {
     }
     
     /// first alias for Lispies
-    public var car: String {return first}
+    public var car: String { return first }
     
     /// butFirst / rest alias for Lispies
-    public var cdr: String {return butFirst}
+    public var cdr: String { return butFirst }
 
     /// Last character in the string
     public var last: String {
@@ -159,7 +159,7 @@ public extension String {
     }
 
     /// All characters but the last
-    public var butLast: String {return String(characters.dropLast())}
+    public var butLast: String { return String(characters.dropLast()) }
     
     /// Return string at subrange
     public func just(desiredRange: Range<Int>) -> String {
@@ -189,9 +189,9 @@ internal extension CollectionType where Index: BidirectionalIndexType {
     /// Return the index of the last element in `self` which returns `true` for `isElement`
     /// - Author: oisdk
     internal func _lastIndexOf(@noescape isElement: Generator.Element -> Bool) -> Index? {
-        for i in indices.reverse()
-            where isElement(self[i]) {
-                return i
+        for index in indices.reverse()
+            where isElement(self[index]) {
+                return index
         }
         return nil
     }
@@ -265,13 +265,13 @@ extension String {
 
     /// Subscript a String using integer ranges
     public subscript (range: Range<Int>) -> String {
-        get {return just(range)}
-        set {replaceRange(rangeFromIntegerRange(range), with:newValue ?? "")}
+        get { return just(range) }
+        set { replaceRange(rangeFromIntegerRange(range), with:newValue ?? "") }
     }
     
     /// Subscript a String using an integer index
     public subscript (i: Int) -> String? {
-        get {return at(i)}
-        set {replaceRange(rangeFromIntegerRange(i...i), with:newValue ?? "")}
+        get { return at(i) }
+        set { replaceRange(rangeFromIntegerRange(i...i), with:newValue ?? "") }
     }
 }

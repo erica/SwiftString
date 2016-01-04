@@ -4,6 +4,10 @@ Erica Sadun, http://ericasadun.com
 
 */
 
+#if os(Linux)
+#else
+#endif
+
 // --------------------------------------------------
 // MARK: Character View
 // --------------------------------------------------
@@ -47,6 +51,10 @@ extension String {
 public extension String {
     
     /// Range of first match to string
+    ///
+    /// Performance note: "not very". This is a stop-gap for light
+    /// use and not a fast solution
+    ///
     public func rangeOfString(searchString: String) -> Range<Index>? {
         
         // If equality, return full range
@@ -85,6 +93,10 @@ public extension String {
     }
     
     /// Mimic NSString's version
+    ///
+    /// Performance note: "not very". This is a stop-gap for light
+    /// use and not a fast solution
+    ///
     public func componentsSeparatedByString(separator:  String) -> [String] {
         var components: [String] = []
         var searchString = self
@@ -198,6 +210,9 @@ public extension String {
     /// Retake on "lastPathComponent" and "pathExtension"
     /// but a little more general in behavior
     ///
+    /// Performance note: "not very". This is a stop-gap for light
+    /// use and not a fast solution
+    ///
     /// - Authors: aciidb, erica, oisdk, with space-assist from jweinberg
     public func suffixFrom(
         boundary: Character,
@@ -212,6 +227,9 @@ public extension String {
     
     /// Alternative to lastPathComponent, pathExtension
     /// but taking prefix instead of suffix
+    ///
+    /// Performance note: "not very". This is a stop-gap for light
+    /// use and not a fast solution
     ///
     /// - Authors: aciidb, erica, oisdk, with space-assist from jweinberg
     public func prefixTo(

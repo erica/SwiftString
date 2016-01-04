@@ -6,6 +6,7 @@ Erica Sadun, http://ericasadun.com
 
 #if os(Linux)
     import Glibc
+    import Foundation
 #else
     import Darwin
 #endif

@@ -1,8 +1,6 @@
 # Swift Strings
 
-A small library of String utilities for the Swift programmer. This is my first attempt to create a github based package for use with the Swift Package Manager.
-
-### Overview:
+BSD. Use at your own risk.
 
 * Character View: convert character view to string and count characters
 * Wackbards: reverse string

@@ -1,8 +1,4 @@
-/*
-
-Erica Sadun, http://ericasadun.com
-
-*/
+import Foundation
 
 #if os(Linux)
 #else
@@ -13,12 +9,12 @@ Erica Sadun, http://ericasadun.com
 // --------------------------------------------------
 
 public extension String.CharacterView {
-    /// Convert character view back to String
+    /// Converts character view back to String
     public var stringValue: String { return String(self) }
 }
 
 public extension String {
-    /// Length in characters
+    /// Returns length in characters
     public var characterLength: Int { return characters.count }
 }
 
@@ -27,119 +23,75 @@ public extension String {
 // --------------------------------------------------
 
 public extension String {
-    /// Reverse a String instance by re-ordering its characters
-    public var reversed: String { return String(characters.reverse()) }
+    /// Reverses a String instance by re-ordering its characters
+    public var reversed: String { return String(characters.reversed()) }
 }
 
 // --------------------------------------------------
 // MARK: Ranges
 // --------------------------------------------------
 
-extension String {
-    /// Create String range from integer range, using string endIndex limit to guard extent
-    public func rangeFromIntegerRange(range: Range<Int>) -> Range<String.Index> {
-        let start = startIndex.advancedBy(range.startIndex, limit: endIndex)
-        let end = startIndex.advancedBy(range.endIndex, limit: endIndex)
-        return start..<end
-    }
-}
+infix operator ..+
 
-// --------------------------------------------------
-// MARK: Range and Components Separated
-// --------------------------------------------------
+/// Returns a CountableClosedRange using location and length
+public func ..+ <Bound: Strideable>(location: Bound, length: Bound.Stride) -> CountableClosedRange<Bound> {
+    return location ... location.advanced(by: length)
+}
 
 public extension String {
-    
-    /// Range of first match to string
-    ///
-    /// Performance note: "not very". This is a stop-gap for light
-    /// use and not a fast solution
-    ///
-    public func rangeOfString(searchString: String) -> Range<Index>? {
-        
-        // If equality, return full range
-        if searchString == self { return startIndex..<endIndex }
-        
-        // Basic sanity checks
-        let (count, stringCount) = (characters.count, searchString.characters.count)
-        guard !isEmpty && !searchString.isEmpty && stringCount < count else { return nil }
-        
-        // Moving search offset. Thanks Josh W
-        let stringCharacters = characters
-        let searchCharacters = searchString.characters
-        var searchOffset = stringCharacters.startIndex
-        let searchLimit = stringCharacters.endIndex.advancedBy(-stringCount, limit:  stringCharacters.startIndex)
-        var failedMatch = true
-        
-        // March character checks through string
-        while searchOffset <= searchLimit {
-            failedMatch = false
-            
-            // Enumerate through characters
-            for (idx, c) in searchCharacters.enumerate() {
-                if c != stringCharacters[searchOffset.advancedBy(idx, limit: stringCharacters.endIndex)] {
-                    failedMatch = true; break
-                }
-            }
-            
-            // Test for success
-            guard failedMatch else { break }
-            
-            // Offset search by one character
-            searchOffset = searchOffset.successor()
-        }
-        
-        return failedMatch ? nil : searchOffset..<searchOffset.advancedBy(stringCount, limit:searchString.endIndex)
+    /// Converts an closed Int range into a CharacterView.Index range
+    public func characterRange(_ range: CountableClosedRange<Int>) -> Range<CharacterView.Index> {
+        let start = characters.index(characters.startIndex, offsetBy: range.lowerBound)
+        let end   = characters.index(start, offsetBy: range.count)
+        return start ..< end
     }
     
-    /// Mimic NSString's version
-    ///
-    /// Performance note: "not very". This is a stop-gap for light
-    /// use and not a fast solution
-    ///
-    public func componentsSeparatedByString(separator:  String) -> [String] {
-        var components: [String] = []
-        var searchString = self
-        
-        // Find a match
-        while let range = searchString.rangeOfString(separator) {
-            
-            // Break off first item (thanks Josh W)
-            let searchStringCharacters = searchString.characters
-            let first = String(searchStringCharacters.prefixUpTo(range.startIndex))
-            if !first.isEmpty { components.append(first) }
-            
-            // Anything left to find?
-            if range.endIndex == searchString.endIndex {
-                return components.isEmpty ? [self] : components
-            }
-            
-            // Move past the separator and continue
-            searchString = String(searchStringCharacters.suffixFrom(range.endIndex))
-        }
-        
-        if !searchString.isEmpty { components.append(searchString) }
-        return components
+    /// Replaces a character-based range with a replacement string
+    public func replacing(range: CountableClosedRange<Int>, with replacementString: String) -> String {
+        return self.replacingCharacters(in: characterRange(range), with: replacementString)
+    }
+    
+    /// Retrieves a ranged substring
+    public func substring(_ range: CountableClosedRange<Int>) -> String {
+        return String(self.characters[characterRange(range)])
+    }
+    
+    /// Subscripts by closed Int range
+    public subscript(_ range: CountableClosedRange<Int>) -> String {
+        get { return substring(range) }
+        set { self = replacing(range: range, with: newValue) }
+    }
+    
+    /// Subscripts by index
+    public subscript(index: Int) -> String {
+        get { return substring(index ... index) }
+        set { self[index ... index] = newValue }
+    }
+    
+    /// Converts Range<Index> to CountableClosedRange<Int>
+    public func closedRange(fromRange range: Range<Index>) -> CountableClosedRange<Int> {
+        let start = distance(from: characters.startIndex, to: range.lowerBound)
+        let end = distance(from: characters.startIndex, to: range.upperBound)
+        return start ..+ (end - start)
+    }
+    
+    /// Returns character-based range of substring
+    public func characterRange(of substring: String) -> CountableClosedRange<Int>? {
+        guard let range = range(of: substring) else { return nil }
+        return closedRange(fromRange: range)
     }
 }
 
-infix operator ~== {}
-
-/// Public operator for matching. I'm not sure if I'm settled on this
-/// implementation yet, so this will be subject to change.
-public func ~==(lhs: String, rhs: String) -> Range<String.Index>? {
-    return lhs.rangeOfString(rhs)
-}
 
 // --------------------------------------------------
-// MARK: Decomposition
+//  MARK: Decomposition
 // --------------------------------------------------
 
 public extension String {
     
     /// First character in the string
     public var first: String {
-        return isEmpty ? "" : self[startIndex..<startIndex.successor()]
+        return isEmpty ? "" : self[0]
     }
     
     /// All characters but the first
@@ -152,126 +104,42 @@ public extension String {
     
     /// butFirst / rest alias for Lispies
     public var cdr: String { return butFirst }
-
+    
     /// Last character in the string
     public var last: String {
-        return isEmpty ? "" : self[endIndex.predecessor()..<endIndex]
+        return isEmpty ? "" : self[characterLength - 1]
     }
-
+    
     /// All characters but the last
     public var butLast: String { return String(characters.dropLast()) }
-    
-    /// Return string at subrange
-    public func just(desiredRange: Range<Int>) -> String {
-        let range = rangeFromIntegerRange(desiredRange)
-        return self[range]
-    }
-
-    /// Return string composed of character at index
-    public func at(desiredIndex: Int) -> String {
-        return just(desiredIndex...desiredIndex)
-    }
-
-    /// Return string excluding range
-    public func except(range: Range<Int>) -> String {
-        var copy = self
-        let range = rangeFromIntegerRange(range)
-        copy.replaceRange(range, with:"")
-        return copy
-    }
 }
 
 // --------------------------------------------------
 // MARK: Trimming
 // --------------------------------------------------
 
-internal extension CollectionType where Index: BidirectionalIndexType {
-    /// Return the index of the last element in `self` which returns `true` for `isElement`
-    /// - Author: oisdk
-    internal func _lastIndexOf(@noescape isElement: Generator.Element -> Bool) -> Index? {
-        for index in indices.reverse()
-            where isElement(self[index]) {
-                return index
-        }
-        return nil
-    }
-}
-
-internal extension CollectionType where Index: BidirectionalIndexType, Generator.Element: Equatable {
-    /// Return the index of the last element in `self` which returns `true` for `isElement`
-    ///
-    /// - Author: oisdk
-    internal func _lastIndexOf(element: Generator.Element) -> Index? {
-        return _lastIndexOf { e in e == element }
-    }
-}
-
-public extension String {
-    /// Retake on "lastPathComponent" and "pathExtension"
-    /// but a little more general in behavior
-    ///
-    /// Performance note: "not very". This is a stop-gap for light
-    /// use and not a fast solution
-    ///
-    /// - Authors: aciidb, erica, oisdk, with space-assist from jweinberg
-    public func suffixFrom(
-        boundary: Character,
-        searchingBackwards backwards: Bool = true,
-        includingBoundary include: Bool = false) -> String {
-            guard let i = backwards ?
-                characters._lastIndexOf(boundary) :
-                characters.indexOf(boundary)
-                else { return self }
-            return String(characters.suffixFrom(include ? i : i.successor()))
-    }
-    
-    /// Alternative to lastPathComponent, pathExtension
-    /// but taking prefix instead of suffix
-    ///
-    /// Performance note: "not very". This is a stop-gap for light
-    /// use and not a fast solution
-    ///
-    /// - Authors: aciidb, erica, oisdk, with space-assist from jweinberg
-    public func prefixTo(
-        boundary: Character,
-        searchingForwards forwards: Bool = true,
-        includingBoundary include: Bool = false) -> String {
-            guard let i = forwards ?
-                characters.indexOf(boundary) :
-                characters._lastIndexOf(boundary)
-                else { return self }
-            return String(include ? characters.prefixThrough(i) : characters.prefixUpTo(i))
-    }
-}
-
-
-
-// --------------------------------------------------
-// MARK: Subscripting
-// --------------------------------------------------
-
-public extension Int {
-    /// Subscript a string using Integer[String] representation
-    /// e.g. let c = 4["hello world"] // "o"
-    /// Thanks Mike Ash, mikeash.com
-    public subscript(string: String) -> Character {
-        return string[string.startIndex.advancedBy(self, limit: string.endIndex)]
-    }
-}
-
 extension String {
-    // The setters in the following two subscript do not enforce length equality
-    // You can replace 1...100 with, for example, "foo"
-
-    /// Subscript a String using integer ranges
-    public subscript (range: Range<Int>) -> String {
-        get { return just(range) }
-        set { replaceRange(rangeFromIntegerRange(range), with:newValue ?? "") }
+    /// Returns string's path extension. Like NSString but Swift
+    public var pathExtension: String {
+        let wackbard = self.reversed
+        if let range = wackbard.range(of: ".") {
+            return wackbard.substring(to: range.lowerBound).reversed
+        } else { return "" }
     }
     
-    /// Subscript a String using an integer index
-    public subscript (i: Int) -> String? {
-        get { return at(i) }
-        set { replaceRange(rangeFromIntegerRange(i...i), with:newValue ?? "") }
+    /// Returns string's last path component. Like NSString but Swift
+    public var lastPathComponent: String {
+        let wackbard = self.reversed
+        if let range = wackbard.range(of: "/") {
+            return wackbard.substring(to: range.lowerBound).reversed
+        } else { return "" }
+    }
+    
+    /// Returns string by deleting last path component. Like NSString but Swift
+    public var deletingLastPathComponent: String {
+        let wackbard = self.reversed
+        if let range = wackbard.range(of: "/") {
+            return wackbard.substring(from: range.lowerBound).reversed
+        } else { return "" }
     }
 }

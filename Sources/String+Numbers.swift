@@ -1,4 +1,16 @@
+/*
+ 
+ Erica Sadun, http://ericasadun.com
+ 
+ */
+
 import Foundation
+
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
 
 // --------------------------------------------------
 // MARK: Numbers

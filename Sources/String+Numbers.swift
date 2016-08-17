@@ -1,71 +1,57 @@
-/*
-
-Erica Sadun, http://ericasadun.com
-
-*/
-
-#if os(Linux)
-    import Glibc
-    import Foundation
-#else
-    import Darwin
-#endif
+import Foundation
 
 // --------------------------------------------------
 // MARK: Numbers
+//
+// Note: although it is possible to use built-in Int
+//       initializers, e.g. Int(self, radix: 16),
+//       these are less flexible as they do not support
+//       common prefixes. If you choose to replace
+//       the unix calls with Int(_, radix:), return 
+//       `Int?` and allow the client to coalesce
+//
 // --------------------------------------------------
 
-// Support Swift prefixes (0b, 0o, 0x) and Unix (0, 0x / 0X)
+// Supports Swift prefixes (0b, 0o, 0x) and Unix (0, 0x / 0X)
 public extension String {
     
-    /// Expose integer value
-    public var integerValue: Int {
-        return strtol(self, nil, 10)
-    }
+    /// Converts string to Int value
+    public var integerValue: Int { return strtol(self, nil, 10) }
     
-    /// Expose UInteger value
-    public var uintegerValue: UInt {
-        return strtoul(self, nil, 10)
-    }
+    /// Converts string to UInt value
+    public var uintegerValue: UInt { return strtoul(self, nil, 10) }
     
-    /// Boolean Value
-    public var booleanValue: Bool {
-        return integerValue != 0
-    }
-
-    /// Convert string to its binary value, ignoring any 0b prefix
+    /// Converts string to Bool value
+    public var booleanValue: Bool { return integerValue != 0 }
+    
+    /// Converts string to binary value, ignoring any 0b prefix
     public var binaryValue: Int {
         return strtol(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)
     }
     
-    /// Convert string to its octal value, ignoring any 0o prefix, supporting 0 prefix
+    /// Converts string to octal value, ignoring any 0o prefix, supporting 0 prefix
     public var octalValue: Int {
         return strtol(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)
     }
     
-    /// Convert string to hex value. This supports 0x, 0X prefix if present
+    /// Converts string to hex value. This supports 0x, 0X prefix if present
     public var hexValue: Int {
         return strtol(self, nil, 16)
     }
     
-    /// Convert string to its unsigned binary value, ignoring any 0b prefix
+    /// Converts string to its unsigned binary value, ignoring any 0b prefix
     public var uBinaryValue: UInt {
         return strtoul(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)
     }
-
-    /// Convert string to its unsigned octal value, ignoring any 0o prefix
+    
+    /// Converts string to its unsigned octal value, ignoring any 0o prefix
     public var uOctalValue: UInt {
         return strtoul(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)
     }
     
-    /// Convert string to unsigned hex value. This supports 0x prefix if present
+    /// Converts string to unsigned hex value. This supports 0x prefix if present
     public var uHexValue: UInt {
         return strtoul(self, nil, 16)
-    }
-    
-    /// Prepend self with character padding
-    public func leftPaddedToWidth(width: Int, withCharacter character: Character = "0") -> String {
-        return String(count: width - Int(characters.count), repeatedValue: character) + self
     }
     
     /// Standard binary prefix
@@ -76,6 +62,12 @@ public extension String {
     
     /// Standard hex prefix
     public var hexPrefix: String { return "0x" }
+    
+    /// Left pads string to at least `minWidth` characters wide
+    public func leftPad(_ character: Character, toWidth minWidth: Int) -> String {
+        guard minWidth > characters.count else { return self }
+        return String(repeating: String(character), count: minWidth - characters.count) + self
+    }
 }
 
 public extension Int {
@@ -86,6 +78,13 @@ public extension Int {
     /// Convert to octal string, no prefix
     public var octalString: String { return String(self, radix:8) }
     
-    /// Convert to hex string, no prefix
-    public var hexString: String { return String(self, radix:16) }
+    /// Returns Int's representation as hex string using 0-padding
+    /// to represent the smallest standard memory footprint that can
+    /// store the value.
+    public var hexString : String {
+        let unpaddedHex = String(self, radix:16, uppercase: true)
+        let stringCharCount = unpaddedHex.characters.count
+        let desiredPadding = 1 << Swift.max(fls(Int32(stringCharCount - 1)), 1) // Thanks, Greg Titus
+        return unpaddedHex.leftPad("0", toWidth: Int(desiredPadding))
+    }
 }

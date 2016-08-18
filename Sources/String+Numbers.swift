@@ -26,6 +26,19 @@ import Foundation
 
 // Supports Swift prefixes (0b, 0o, 0x) and Unix (0, 0x / 0X)
 public extension String {
+    /// Trims prefix from string
+    func trim(prefix: String) -> String {
+        return hasPrefix(prefix) ? String(characters.dropFirst(prefix.characters.count)) : self
+    }
+
+    /// Standard binary prefix
+    public var binaryPrefix: String { return "0b" }
+    
+    /// Standard octal prefix
+    public var octalPrefix: String { return "0o" }
+    
+    /// Standard hex prefix
+    public var hexPrefix: String { return "0x" }
     
     /// Converts string to Int value
     public var integerValue: Int { return strtol(self, nil, 10) }
@@ -37,43 +50,34 @@ public extension String {
     public var booleanValue: Bool { return integerValue != 0 }
     
     /// Converts string to binary value, ignoring any 0b prefix
-    public var binaryValue: Int {
-        return strtol(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)
+    public var binaryValue: Int? {
+        return Int(trim(prefix: binaryPrefix), radix: 2)
     }
     
     /// Converts string to octal value, ignoring any 0o prefix, supporting 0 prefix
-    public var octalValue: Int {
-        return strtol(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)
+    public var octalValue: Int? {
+        return Int(trim(prefix: octalPrefix), radix: 8)
     }
     
     /// Converts string to hex value. This supports 0x, 0X prefix if present
-    public var hexValue: Int {
-        return strtol(self, nil, 16)
+    public var hexValue: Int? {
+        return Int(trim(prefix: hexPrefix).trim(prefix: "0X"), radix: 16)
     }
     
     /// Converts string to its unsigned binary value, ignoring any 0b prefix
-    public var uBinaryValue: UInt {
-        return strtoul(self.hasPrefix("0b") ? String(characters.dropFirst(2)) : self, nil, 2)
+    public var uBinaryValue: UInt? {
+        return UInt(trim(prefix: binaryPrefix), radix: 2)
     }
     
     /// Converts string to its unsigned octal value, ignoring any 0o prefix
-    public var uOctalValue: UInt {
-        return strtoul(self.hasPrefix("0o") ? String(characters.dropFirst(2)) : self, nil, 8)
+    public var uOctalValue: UInt? {
+        return UInt(trim(prefix: octalPrefix), radix: 8)
     }
     
     /// Converts string to unsigned hex value. This supports 0x prefix if present
-    public var uHexValue: UInt {
-        return strtoul(self, nil, 16)
+    public var uHexValue: UInt? {
+        return UInt(trim(prefix: hexPrefix).trim(prefix: "0X"), radix: 16)
     }
-    
-    /// Standard binary prefix
-    public var binaryPrefix: String { return "0b" }
-    
-    /// Standard octal prefix
-    public var octalPrefix: String { return "0o" }
-    
-    /// Standard hex prefix
-    public var hexPrefix: String { return "0x" }
     
     /// Left pads string to at least `minWidth` characters wide
     public func leftPad(_ character: Character, toWidth minWidth: Int) -> String {

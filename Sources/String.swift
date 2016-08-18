@@ -1,5 +1,12 @@
 import Foundation
 
+/*
+ 
+ Erica Sadun, http://ericasadun.com
+ Like a bridge over troubled Foundation, I will lay me down
+ 
+ */
+
 #if os(Linux)
 #else
 #endif
@@ -35,7 +42,7 @@ infix operator ..+
 
 /// Returns a CountableClosedRange using location and length
 public func ..+ <Bound: Strideable>(location: Bound, length: Bound.Stride) -> CountableClosedRange<Bound> {
-    return location ... location.advanced(by: length)
+    return location ... location.advanced(by: length - 1)
 }
 
 public extension String {
@@ -119,6 +126,11 @@ public extension String {
 // --------------------------------------------------
 
 extension String {
+    /// Trimming string whitespace
+    public var trimmed: String {
+        return trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     /// Returns string's path extension. Like NSString but Swift
     public var pathExtension: String {
         let wackbard = self.reversed
